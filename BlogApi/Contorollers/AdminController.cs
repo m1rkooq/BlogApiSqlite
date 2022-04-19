@@ -22,7 +22,7 @@ namespace BlogApi.Contorollers
         private readonly IAdminServise _service;
         public AdminController(IAdminServise service) =>
             _service = service;
-/*
+
         [AllowAnonymous]
         [HttpGet]
         public IActionResult CreateTable()
@@ -50,7 +50,7 @@ namespace BlogApi.Contorollers
                 return Ok("Ok!");
 
             }
-        }*/
+        }
 
         [HttpGet("GetDate")]
         public IActionResult GetPostPerDate([FromBody] AdminsRequestsDate model)

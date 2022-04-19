@@ -31,6 +31,7 @@ namespace BlogApi.DataLayer
             {
                 if (conn.State == ConnectionState.Closed)
                     conn.Open();
+                
                 string CommandString = "INSERT INTO Posts(Title, Content, CreateTime, UpdateTime, UserId) " +
                     "VALUES (@Title, @Content, @CreateTime, @UpdateTime, @UserId);" +
                     "SELECT last_insert_rowid();";
@@ -66,6 +67,7 @@ namespace BlogApi.DataLayer
                                 Tags = tags
                             });
                         }
+          
                         return postList;
                     }
                     catch (Exception ex)
@@ -76,8 +78,49 @@ namespace BlogApi.DataLayer
             }
             return null;
         }
+        private void disFK()
+        {
+            using (SqliteConnection conn = new SqliteConnection(_config))
+            {
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
 
-        
+                string CommandString = "PRAGMA foreign_keys = OFF;";
+                using (SqliteCommand cmd = new SqliteCommand(CommandString, conn))
+                {                  
+                    try
+                    {
+                        cmd.ExecuteNonQuery();                        
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            }
+        }
+        private void actFK()
+        {
+            using (SqliteConnection conn = new SqliteConnection(_config))
+            {
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
+
+                string CommandString = "PRAGMA foreign_keys = ON;";
+                using (SqliteCommand cmd = new SqliteCommand(CommandString, conn))
+                {
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            }
+        }
+
 
         public List<PostResponse> UpdatePost(int UserId, PostUpdate postUpdate)
         {
@@ -131,8 +174,8 @@ namespace BlogApi.DataLayer
             {
                 if (conn.State == ConnectionState.Closed)
                     conn.Open();
-
-                string CommandString = "DELETE FROM Posts WHERE Id = @Id AND UserId = @UserId;";
+                disFK();
+                string CommandString = "PRAGMA foreign_keys = OFF; DELETE FROM Posts WHERE Id = @Id AND UserId = @UserId;";
                 using (SqliteCommand cmd = new SqliteCommand(CommandString, conn))
                 {
                     cmd.Parameters.AddWithValue("@Id", postDelete.Id);
@@ -149,6 +192,7 @@ namespace BlogApi.DataLayer
                     }
                 }
             }
+            actFK();
             return Return;
         }
 
